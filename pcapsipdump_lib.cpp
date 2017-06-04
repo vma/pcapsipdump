@@ -64,11 +64,9 @@ size_t expand_dir_template(char *s, size_t max, const char *format,
         }
 
     }
-    {
-        size_t r = strftime(s, max, s1, tm);
-        free(s1);
-        return r;
-    }
+    size_t r = strftime(s, max, s1, tm);
+    free(s1);
+    return r;
 }
 
 
@@ -94,15 +92,8 @@ int opts_sanity_check_d(char **opt_fntemplate)
         // Then append some default filename template to be backwards-compatible
         *opt_fntemplate = (char *)malloc(strlen(s) + 128);
         strcpy(*opt_fntemplate, orig_opt_fntemplate);
-        strcat(*opt_fntemplate, "/%Y%m%d/%H/%Y%m%d-%H%M%S-%f-%t-%i.pcap");
+        strcat(*opt_fntemplate, "/%Y%m%dT%H%M%S_%f_%t_%i.pcap");
         expand_dir_template(s, sizeof(s), orig_opt_fntemplate, "", "", "", 0);
-    }else{
-        // (try to) create directory hierarchy
-        if (strchr(s, '/') && mkdir_p(dirname(s), 0777)) {
-            fprintf(stderr, "Can't create directory for '-d %s': ", orig_opt_fntemplate);
-            perror (s);
-            return(2);
-        }
     }
     return(0);
 }
